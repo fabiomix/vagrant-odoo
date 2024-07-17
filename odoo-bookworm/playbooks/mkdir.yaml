@@ -1,0 +1,21 @@
+---
+- name: Make directories
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Workarea
+      ansible.builtin.file:
+        path: /srv/workarea
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: Odoo log folder
+      ansible.builtin.file:
+        path: /var/log/odoo
+        state: directory
+        owner: root
+        group: adm
+        mode: "0755"

@@ -1,0 +1,7 @@
+---
+- import_playbook: apt.yaml
+- import_playbook: docker.yaml
+- import_playbook: mkdir.yaml
+- import_playbook: nginx.yaml
+- import_playbook: postgresql.yaml
+- import_playbook: rsyslog.yaml

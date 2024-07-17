@@ -1,0 +1,40 @@
+---
+- name: APT packages
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Generic stuff
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - dos2unix
+          - git
+          - gnupg
+          - htop
+          - python3-pip
+          - python3-venv
+          - rsyslog
+        install_recommends: false
+        state: present
+
+    - name: Odoo stuff
+      ansible.builtin.apt:
+        name:
+          - libcups2-dev
+          - libjpeg-dev
+          - libldap2-dev
+          - libpq-dev
+          - libsasl2-dev
+          - libssl-dev
+          - libxml2
+          - libxml2-dev
+          - libxslt1-dev
+          - node-less
+          - python3-dev
+          - python3-pip
+          - python3-venv
+          - zlib1g-dev
+        install_recommends: false
+        state: present

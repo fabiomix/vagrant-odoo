@@ -1,0 +1,22 @@
+---
+- name: Rsyslog
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Set newline config
+      ansible.builtin.copy:
+        content: $EscapeControlCharactersOnReceive off
+        dest: /etc/rsyslog.d/10-global.conf
+
+    - name: Add filter conditions
+      ansible.builtin.template:
+        src: ../templates/rsyslog.filter.j2
+        dest: /etc/rsyslog.d/50-odoo.conf
+        mode: "0644"
+
+    - name: Define log retention policy
+      ansible.builtin.template:
+        src: ../templates/logrotate.j2
+        dest: /etc/logrotate.d/odoo
+        mode: "0644"

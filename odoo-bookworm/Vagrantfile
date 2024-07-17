@@ -11,14 +11,14 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "debian/bullseye64"
+  config.vm.box = "debian/bookworm64"
 
   # Disable automatic box update checking.
   config.vm.box_check_update = false
 
   # Change the size of the existing disk. Be sure to install the external
   # vagrant plugin https://github.com/sprotheroe/vagrant-disksize.
-  config.disksize.size = "64GB"
+  # config.disksize.size = "64GB"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -29,15 +29,15 @@ Vagrant.configure("2") do |config|
   # your network.
   # config.vm.network "public_network", type: "dhcp"
 
-  # Disable the default share of the current code directory.
-  config.vm.synced_folder ".", "/vagrant", disabled: true
+  # Keep the default Vagrant share directory (for Ansible provision).
+  # config.vm.synced_folder ".", "/vagrant", disabled: true
 
   # The hostname the machine should have.
-  config.vm.hostname = "odoo-bullseye"
+  config.vm.hostname = "odoo-bookworm"
 
   # VirtualBox-specific configurations.
   config.vm.provider "virtualbox" do |vbox|
-    vbox.name = "Odoo-bullseye"
+    vbox.name = "Odoo-bookworm"
     vbox.cpus = 2
     vbox.memory = 2048
     vbox.check_guest_additions = false
@@ -46,32 +46,16 @@ Vagrant.configure("2") do |config|
   end
 
   # Extend partition size with a shell script to fill available space.
-  config.vm.provision "shell", inline: <<-SCRIPT
-    growpart /dev/sda 1
-    resize2fs /dev/sda1
-  SCRIPT
+  # config.vm.provision "shell", inline: <<-SCRIPT
+  #   growpart /dev/sda 1
+  #   resize2fs /dev/sda1
+  # SCRIPT
 
-  # Install apt packages with inline script.
-  config.vm.provision "shell", inline: <<-SCRIPT
-    apt-get update
-    apt-get install -y ca-certificates curl dos2unix git gpg htop nginx
-  SCRIPT
-
-  # Install PostgreSQL and Docker.
-  config.vm.provision "shell", path: "apt-postgres.sh"
-  config.vm.provision "shell", path: "apt-docker.sh"
-
-  # Install Python3 and Odoo stuff.
-  config.vm.provision "shell", inline: <<-SCRIPT
-    apt-get install -y python3-pip python3-venv
-    apt-get install -y libxml2 python3-dev libxml2-dev libxslt1-dev
-    apt-get install -y python3-dev libldap2-dev libsasl2-dev libssl-dev
-    apt-get install -y libjpeg-dev zlib1g-dev
-    apt-get install -y libpq-dev
-    apt-get install -y libcups2-dev
-    apt-get install -y node-less
-    pip3 install zc.buildout Cython
-    pip3 install git+https://github.com/anybox/anybox.recipe.odoo.git@master
-  SCRIPT
+  # Run Ansible from the Vagrant VM
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "playbooks/ansible.yaml"
+    ansible.compatibility_mode = "2.0"
+    ansible.verbose = true
+  end
 
 end

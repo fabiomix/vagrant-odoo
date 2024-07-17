@@ -1,0 +1,27 @@
+---
+- name: Nginx
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+
+    - name: Create virtual host
+      ansible.builtin.template:
+        src: ../templates/nginx.vhost.j2
+        dest: /etc/nginx/sites-available/odoo
+        mode: "0644"
+
+    - name: Enable virtual host
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/odoo
+        dest: /etc/nginx/sites-enabled/odoo
+        state: link
+
+    - name: Reload and start at boot
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+        enabled: true

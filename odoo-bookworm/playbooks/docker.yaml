@@ -1,0 +1,36 @@
+---
+- name: Docker
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Add key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        keyring: /usr/share/keyrings/docker-keyring.gpg
+
+    - name: Add repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/usr/share/keyrings/docker-keyring.gpg]
+          https://download.docker.com/linux/debian bookworm stable
+        state: present
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+          - python3-docker
+        state: present
+
+    - name: Add user to docker group
+      ansible.builtin.user:
+        name: vagrant
+        groups: docker
+
+    - name: Pull MailHog image
+      community.docker.docker_image:
+        name: mailhog/mailhog
+        source: pull
