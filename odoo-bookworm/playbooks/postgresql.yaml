@@ -23,10 +23,17 @@
           - python3-psycopg2
         state: present
 
+    # - name: Create Odoo user
+    #   become: true
+    #   become_user: postgres
+    #   community.postgresql.postgresql_user:
+    #     name: odoo
+    #     password: odoo
+
     - name: Set .pgpass
       ansible.builtin.template:
         src: ../templates/postgres.pgpass.j2
         dest: /home/vagrant/.pgpass
         owner: vagrant
         group: vagrant
-        mode: "0644"
+        mode: "0600"

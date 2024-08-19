@@ -30,6 +30,17 @@
         name: vagrant
         groups: docker
 
+    - name: Set docker settings
+      ansible.builtin.template:
+        src: ../templates/docker.daemon.j2
+        dest: /etc/docker/daemon.json
+        mode: "0600"
+
+    - name: Reload service
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+
     - name: Pull MailHog image
       community.docker.docker_image:
         name: mailhog/mailhog
